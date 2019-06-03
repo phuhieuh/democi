@@ -184,7 +184,7 @@ class Main extends CI_Controller {
 	// }
 
 	#update user details
-	public function userDetails($id)
+	public function userDetails($id, $error='')
 	{
 		if ($this->session->has_userdata('username')) {
 			$data['title'] = 'Thông tin cá nhân';
@@ -192,6 +192,7 @@ class Main extends CI_Controller {
 			$data['userDetails'] = $this->main_model->fetch_userDetails($id);
 			$data['level'] = $this->main_model->getLevel();
 			$data['id_user']= $id;
+			$data['error'] = $error;
 			$this->load->view('userdetails_view', $data);
 		}else{
 			redirect(base_url().'main/index');
@@ -200,7 +201,6 @@ class Main extends CI_Controller {
 
 	public function userDetails_validation()
 	{
-		$msg=[];
 		$this->form_validation->set_rules('fname','First Name','required|trim|alpha');
 		$this->form_validation->set_rules('lname','Last Name','required|trim|alpha');
 		$this->form_validation->set_rules('email','Email','required|trim|valid_email');
@@ -210,45 +210,44 @@ class Main extends CI_Controller {
 		$this->form_validation->set_message('check_level','Vui lòng chọn quyền người dùng');
 			
 		if ($this->form_validation->run() == TRUE) {
-			$uploadedFile = '';
-			$img_current = $this->input->post('img_current');
-			
-			if (isset($_FILES["upload_data"]["name"]) && $_FILES['upload_data']['name'] != '') {
-				#Upload file
-				$config['upload_path'] = 'uploads/files/';
-				$config['allowed_types'] = 'gif|jpg|png';
-				
-				$this->load->library('upload', $config);
 
-				if ( ! $this->upload->do_upload('upload_data')){
-				 	echo $this->upload->display_errors();
-				}
-				else{
-					if(file_exists('/uploads/files/'.$img_current)){
-			            unlink('/uploads/files/'.$img_current);         
-			        }
-					
-					$uploadData = $this->upload->data();
-                    $uploadedFile = $uploadData['file_name'];
-				}
-			}else{
-				$uploadedFile = $img_current;
+			$config['upload_path'] = 'uploads/files/';
+			$config['allowed_types'] = 'gif|jpg|png';
+			$this->load->library('upload', $config);
+
+			if ( ! $this->upload->do_upload('upload_data')){
+				$uploadedFile =  $this->input->post('old_file_name');
+			 	$this->userDetails($this->input->post('hidden_idUser'), $this->upload->display_errors());
 			}
+			else{
+			 	$uploadData = $this->upload->data();
+			 	$uploadedFile = $uploadData['file_name'];
 
-			$data = [
-				'first_name' => $this->input->post('fname'),
-				'last_name' => $this->input->post('lname'),
-				'email' => $this->input->post('email'),
-				'address' => $this->input->post('address'),
-				'phone' => $this->input->post('phone'),
-				'id_user' => $this->input->post('hidden_idUser'),
-				'id_level' => $this->input->post('level'),
-				'image' => $uploadedFile,
-				'updated_at' => date("Y-m-d H:i:s")
-			];
-			
-			if ($this->main_model->update_userDetails($data)) {
-				$this->userDetails($this->input->post('hidden_idUser'));
+			 	$data = [
+					'first_name' => $this->input->post('fname'),
+					'last_name' => $this->input->post('lname'),
+					'email' => $this->input->post('email'),
+					'address' => $this->input->post('address'),
+					'phone' => $this->input->post('phone'),
+					'id_user' => $this->input->post('hidden_idUser'),
+					'id_level' => $this->input->post('level'),
+					'image' => $uploadedFile,
+					'updated_at' => date("Y-m-d H:i:s")
+				];
+
+				if ($this->main_model->update_userDetails($data, $this->input->post('hidden_id'))) {
+
+					$old_file_name = $this->input->post('old_file_name');
+					if(file_exists('./uploads/files/'. $old_file_name))
+					{
+					    unlink('./uploads/files/'. $old_file_name);
+					}
+
+					$this->load->view('update_success_view');
+				}else{
+					echo 'that bai upload';
+					$this->userDetails($this->input->post('hidden_idUser'));
+				}
 			}
 		}else{
 			$this->userDetails($this->input->post('hidden_idUser'));

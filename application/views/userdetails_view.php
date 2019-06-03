@@ -79,12 +79,13 @@
                 <div class="col-sm-3">
                   <?php if (isset($userDetails) && count($userDetails) != 0 && $userDetails[0]->image!=''): ?>
                     <img src="<?= base_url() ?>uploads/files/<?= $userDetails[0]->image ?>" style="width: 200px; height: 200px;">
-                    <input type="hidden" name="img_current" value="<?= $userDetails[0]->image ?>">
+                    <input type="hidden" name="old_file_name" value="<?= $userDetails[0]->image ?>">
                     <input type="file" name="upload_data" class="form-control">
                   <?php else: ?>
                     <img src="<?= base_url() ?>vendor/images/noimage.png" style="width: 200px; height: 200px;">
                     <input type="file" name="upload_data" class="form-control">
                   <?php endif ?>
+                  <span class="text-danger"><?php echo $error ?></span>
                 </div>
                 <div class="col-sm-6 offset-2">
                   <?= $this->session->flashdata('success_userDetails'); ?>

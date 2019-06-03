@@ -38,7 +38,7 @@ class Main_model extends CI_Model {
 			'email' => 'No Email',
 			'address' => 'No Address',
 			'phone' => 0,
-			'image' => 'img_avatar1.png',
+			'image' => '',
 			'id_level' => 2,
 			'id_user' => $id_user,
 			'created_at' => date("Y-m-d H:i:s")
