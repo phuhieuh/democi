@@ -34,13 +34,16 @@
 <body>
   <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="<?= base_url() ?>main/index"><?= $this->session->userdata('username') ?></a>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <input name="search_text" id="search_text" class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
     <ul class="navbar-nav px-3">
       <li class="nav-item text-nowrap">
         <a class="nav-link" href="<?= base_url() ?>main/logout">Sign out</a>
       </li>
     </ul>
   </nav>
+  <div class="col-md-9 ml-sm-auto col-lg-10 px-4 mt-5">
+    <div id="result"></div>
+  </div>
 
   <div class="container-fluid">
     <div class="row">
@@ -101,5 +104,6 @@
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="<?= base_url() ?>vendor/dist/js/myscript.js"></script>
 </body>
 </html>
