@@ -35,44 +35,49 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <h1 class="display-4 text-center">Thông tin cá nhân</h1>
-      </div>
-      <div class="col-sm-4">
-        <div class="card">
-          <img src="<?= base_url() ?>vendor/images/img_avatar3.png" class="img-fluid">
-          <div class="card-body">
-            <h4 class="card-title">USER NAME</h4>
-            <p class="card-text">Admin/User</p>
+        <h1 class="display-4 text-center"><?= $title ?></h1>
+      </div> <!-- end col-sm-12 -->
+    </div> <!-- end row -->
+    <div class="row">
+      <?php foreach ($data_user as $row): ?>
+        <div class="col-sm-4">
+          <div class="card">
+            <img src="<?= base_url() ?>uploads/files/<?= $row->image ?>" class="img-fluid">
+            <div class="card-body">
+              <h4 class="card-title">Username: <span class="text-success"><?= $row->username ?></span></h4>
+              <p class="card-text"><b>Level: <span class="text-primary"><?= $row->name ?></span></b></p>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="col-sm-6 offset-2">
-        <div class="row">
-          <div class="col-sm-4">
-            <div><b>First Name: </b></div>
-            <div><b>Last Name: </b></div>
-            <div><b>Email: </b></div>
-            <div><b>Address: </b></div>
-            <div><b>Phone: </b></div>
-            <div><b>Created at: </b></div>
+        </div> <!-- end col-sm-4 -->
+        <div class="col-sm-6 offset-2">
+          <div class="row">
+            <div class="col-sm-4">
+              <div><b>First Name: </b></div>
+              <div><b>Last Name: </b></div>
+              <div><b>Email: </b></div>
+              <div><b>Address: </b></div>
+              <div><b>Phone: </b></div>
+              <div><b>Created at: </b></div>
+            </div>
+            <div class="col-sm-8">
+              <div><?= $row->first_name ?></div>
+              <div><?= $row->last_name ?></div>
+              <div><?= $row->email ?></div>
+              <div><?= $row->address ?></div>
+              <div><?= $row->phone ?></div>
+              <div><?= date('d-m-Y', strtotime($row->created_at)); ?></div>
+            </div>
           </div>
-          <div class="col-sm-8">
-            <div>ABC</div>
-            <div>XYZ</div>
-            <div>DEMOCI@DEMOCI.XYZ</div>
-            <div>Hai trieu, quan 1</div>
-            <div>0838758282</div>
-            <div>01/06/2019</div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <button class="btn btn-primary">Print to PDF</button>
-            <button class="btn btn-primary">Print</button>
-          </div>
-        </div>
-      </div>
-    </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <button class="btn btn-primary">Print to PDF</button>
+              <button class="btn btn-primary">Print</button>
+            </div> <!-- end col-sm-6 -->
+          </div> <!-- end row -->
+        </div> <!-- end col-sm-6 offset-2 -->
+      <?php endforeach ?>
+    </div> <!-- end row -->
+      
   </div>
 <!-- jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>

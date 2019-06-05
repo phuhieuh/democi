@@ -210,19 +210,23 @@ class Main extends CI_Controller {
 		$this->form_validation->set_message('check_level','Vui lòng chọn quyền người dùng');
 			
 		if ($this->form_validation->run() == TRUE) {
-
 			$config['upload_path'] = 'uploads/files/';
 			$config['allowed_types'] = 'gif|jpg|png';
 			$this->load->library('upload', $config);
-
+			
 			if ( ! $this->upload->do_upload('upload_data')){
-				$uploadedFile =  $this->input->post('old_file_name');
 			 	$this->userDetails($this->input->post('hidden_idUser'), $this->upload->display_errors());
 			}
 			else{
 			 	$uploadData = $this->upload->data();
 			 	$uploadedFile = $uploadData['file_name'];
 
+			 	$old_file_name = $this->input->post('old_file_name');
+				if(file_exists('./uploads/files/'. $old_file_name))
+				{
+				    unlink('./uploads/files/'. $old_file_name);
+				}
+				
 			 	$data = [
 					'first_name' => $this->input->post('fname'),
 					'last_name' => $this->input->post('lname'),
@@ -237,11 +241,6 @@ class Main extends CI_Controller {
 
 				if ($this->main_model->update_userDetails($data, $this->input->post('hidden_id'))) {
 
-					$old_file_name = $this->input->post('old_file_name');
-					if(file_exists('./uploads/files/'. $old_file_name))
-					{
-					    unlink('./uploads/files/'. $old_file_name);
-					}
 
 					$this->load->view('update_success_view');
 				}else{
@@ -258,9 +257,15 @@ class Main extends CI_Controller {
 		return $value == '0' ? false : true;
 	}
 
+	#Hiển thị Thông tin In Ra PDF và Print
 	public function user_view($id)
 	{
-		$this->load->view('user_view');
+		$data['title'] = 'Thông tin cá nhân';
+		// $data['user'] = $this->main_model->fetch_single_data($id);
+		// $data['userDetails'] = $this->main_model->fetch_userDetails($id);
+		$data['data_user'] = $this->main_model->get_all_user($id);
+
+		$this->load->view('user_view', $data);
 	}
 
 	public function user()
@@ -272,6 +277,66 @@ class Main extends CI_Controller {
 		}else{
 			redirect(base_url().'main/login');
 		}
+	}
+
+	public function search()
+	{
+		$output = '';
+		$kw = '';
+		if ($this->input->post('kw') != '') {
+			$kw = $this->input->post('kw');
+		}
+		$data = $this->main_model->search_data($kw);
+
+		$output .= '
+		<div class="table-responsive">
+          <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                <td>#</td>
+                <td>Tên người dùng</td>
+                <td>Level</td>
+                <td width="10%">Ngày tạo</td>
+                <td width="5%">View</td>
+                <td width="5%">Sửa</td>
+                <td width="5%">Xóa</td>
+              </tr>
+            </thead>
+		';
+
+		if ($data->num_rows() > 0) {
+			$i = 0;
+			foreach ($data->result() as $row) {
+				$i++;
+				$output .= '
+					<tbody>
+		                <tr>
+		                  <td>'. $i .'</td>
+		                  <td>'. $row->username .'</td>
+		                  <td>'. $row->name .'</td>
+		                  <td>'. date('d/m/y', strtotime($row->created_at)) .'</td>
+		                  <td><a href="'.base_url().'main/user_view/'. $row->id_user .'" class="btn btn-info btn-sm">Xem</a></td>
+		                  <td><a href="'.base_url().'main/update/'. $row->id_user .'" class="btn btn-primary btn-sm">Sửa</a></td>
+		                  <td><a href="'.base_url().'main/delete/'. $row->id_user .'" class="btn btn-danger btn-sm">Xóa</a></td>
+		                </tr>
+		            </tbody>
+				';
+			}		
+		}else{
+			$output .= '
+				<tbody>
+	            	<tr>
+	                	<td colspan="8">No Data Found</td> 
+	            	</tr> 
+	            </tbody>
+			';
+		}
+
+		$output .= '
+				</table>
+			</div>
+		';
+		echo $output;	
 	}
 }
 /* End of file main.php */

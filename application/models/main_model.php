@@ -131,6 +131,31 @@ class Main_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+
+	public function get_all_user($id)
+	{
+		$this->db->from('user_details');
+		$this->db->join('users', 'users.id = user_details.id_user');
+		$this->db->join('level', 'level.id = user_details.id_level');
+		$this->db->where('id_user', $id);
+		$query =$this->db->get();
+		return $query->result();
+	}
+
+	public function search_data($keywords)
+	{
+		$this->db->select('*');
+		$this->db->from('user_details');
+		$this->db->join('users', 'users.id = user_details.id_user', 'left');
+		$this->db->join('level', 'level.id = user_details.id_level', 'left');
+		if($keywords != '')
+		{
+			$this->db->like('username', $keywords);
+			$this->db->or_like('name', $keywords);
+		}
+		$this->db->order_by('user_details.id', 'DESC');
+		return $this->db->get();
+	}
 }
 
 /* End of file main_model.php */
